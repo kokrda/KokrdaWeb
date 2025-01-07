@@ -1,0 +1,767 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="externi.css">
+        <link rel="stylesheet" href="reset.css" media="screen">
+        <link rel="stylesheet" href="styles.css" media="screen">
+        <base href="https://objects.ncs/">
+<title>Generování Michala</title>
+<style>
+
+@keyframes floatEffect {
+    0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+}
+
+@keyframes glowEffect {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(179, 27, 27, 0.2);
+    }
+    50% {
+        box-shadow: 0 0 10px rgba(182, 1, 1, 0.8);
+    }
+}
+
+#randomImage {
+    animation: floatEffect 3s infinite ease-in-out;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    display: none;
+    transition: box-shadow 1s ease;
+}
+
+#randomImage.floating {
+    animation: floatEffect 3s infinite ease-in-out;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 100vw;
+    position: fixed;
+}
+
+#randomImage {
+    max-width: 375px;
+    max-height: 375px;
+    margin: 20px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    display: none;
+}
+
+#timer {
+    position: fixed;
+    top: 20px;
+    font-size: 24px;
+    font-family: monospace;
+    visibility: hidden;
+}
+
+button {
+    padding: 15px 30px;
+    font-size: 18px;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    margin: 20px;
+    z-index: 100;
+}
+
+#generateButton {
+    position: fixed;
+    bottom: 20px;
+}
+
+#editButton {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: #2196F3;
+}
+
+#editButton:hover {
+    background: #1976D2;
+}
+
+#muteButton {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #ff4444;
+}
+
+button:hover {
+    background: #45a049;
+}
+
+#muteButton:hover {
+    background: #cc3333;
+}
+
+.audio-player {
+    margin: 20px;
+    visibility: hidden;
+    position: fixed;
+    bottom: -100px;
+}
+
+.edit-menu {
+    position: fixed;
+    bottom: 100px;
+    left: 20px;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    display: none;
+    max-height: 70vh;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.edit-menu select {
+    width: 200px;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.edit-menu label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.edit-menu input[type="file"] {
+    width: 200px;
+    margin: 10px;
+    padding: 5px;
+}
+
+.reset-button {
+    padding: 5px 10px;
+    font-size: 14px;
+    background: #ff4444;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.reset-button:hover {
+    background: #cc3333;
+}
+
+#applyButton {
+    background: #2196F3;
+    margin-top: 20px;
+}
+
+#applyButton:hover {
+    background: #1976D2;
+}
+
+#delayInputContainer {
+    margin: 10px;
+}
+
+#delayInput {
+    width: 100px;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.search-container {
+    margin: 10px 0;
+    width: 100%;
+}
+
+.search-input {
+    width: 200px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #2196F3;
+    box-shadow: 0 0 5px rgba(33, 150, 243, 0.3);
+}
+
+.hidden-option {
+    display: none !important;
+}
+
+optgroup {
+    font-weight: bold;
+    font-style: normal;
+    background: #f5f5f5;
+    padding: 5px;
+}
+
+optgroup option {
+    font-weight: normal;
+    padding-left: 15px;
+    background: white;
+}
+
+.counter-container {
+    margin-top: 20px;
+    font-size: 14px;
+}
+</style>
+</head>
+<body>
+
+   
+
+    <div id="timer">0.00</div>
+    <div class="container">
+        <img id="randomImage" width="375" height="375">
+        <audio id="audioPlayer" class="audio-player" controls loop></audio>
+        <button id="generateButton" onclick="generateRandomPairing()">Generate Michal Image With Intro</button>
+        <button id="editButton" onclick="toggleEditMenu()">Edit</button>
+        <button id="muteButton" onclick="toggleMute()">Mute</button>
+    </div>
+
+    
+
+    <div id="editMenu" class="edit-menu">
+       
+        <label for="imageSelect">Select Image:</label>
+        <select id="imageSelect"></select>
+        
+        
+        <label for="soundSelect">Select Song:</label>
+        <select id="soundSelect"></select>
+        
+        <label for="imageUpload">Or Upload Image:</label>
+        <input type="file" id="imageUpload" accept="image/*">
+        <button type="button" class="reset-button" onclick="resetImageUpload()">Storno</button>
+        
+        <label for="soundUpload">Or Upload Song:</label>
+        <input type="file" id="soundUpload" accept="audio/*">
+        <button type="button" class="reset-button" onclick="resetSoundUpload()">Storno</button>
+        
+        <div id="delayInputContainer" style="display: none;">
+            <label for="delayInput">Set Image Delay (seconds):</label>
+            <input type="number" id="delayInput" step="0.01" min="0" value="10">
+        </div>
+        
+        <button id="applyButton" onclick="applyCustomPairing()">Apply</button>
+        <div class="counter-container">
+            <span id="imageCount"></span> images, <span id="soundCount"></span> songs
+        </div>
+    </div>
+
+    <div class="side-buttons">
+        <a href="C:\Users\Jakub\Downloads\p-edpov-d-po-as--main\p-edpov-d-po-as--main\p-edpov-d-po-as--main\weather forecast\html.html" class="side-btn">back</a>
+       
+    </div>
+
+    
+
+<script>
+const images = [
+    {
+        src: "https://file.garden/Z32B8tR62kvprAN2/Photos/WhatsApp%20Image%202025-01-07%20at%2020.54.24.jpeg",
+        name: "Modra mikina",
+        category: "Michal"
+    },
+    {
+        src: "https://file.garden/Z32B8tR62kvprAN2/Photos/WhatsApp%20Image%202025-01-07%20at%2020.54.24%20(1).jpeg",
+        name: "velke cerne bryle",
+        category: "Michal"
+    },
+    {
+        src: "https://file.garden/Z32B8tR62kvprAN2/Photos/WhatsApp%20Image%202025-01-07%20at%2020.54.24%20(3).jpeg",
+        name: "kino bryle cerne",
+        category: "Michal"
+    },
+    {
+        src: "https://file.garden/Z32B8tR62kvprAN2/Photos/WhatsApp%20Image%202025-01-07%20at%2020.54.23.jpeg",
+        name: "kino zezadu",
+        category: "Michal"
+    },
+    {
+        src: "https://file.garden/Z32B8tR62kvprAN2/Photos/WhatsApp%20Image%202025-01-07%20at%2020.54.23%20(1).jpeg",
+        name: "big smile",
+        category: "Michal"
+    },
+    {
+        src: "https://file.garden/Z32B8tR62kvprAN2/Photos/WhatsApp%20Image%202025-01-07%20at%2020.54.24%20(2).jpeg",
+        name: "big kino bryle smile",
+        category: "Michal"
+    },
+    {
+        src: "https://file.garden/Z32B8tR62kvprAN2/Photos/WhatsApp%20Image%202025-01-07%20at%2020.54.22.jpeg",
+        name: "bigass celo",
+        category: "Michal"
+    },
+    {
+        src: "https://file.garden/Z32B8tR62kvprAN2/Photos/WhatsApp%20Image%202025-01-07%20at%2020.54.22%20(1).jpeg",
+        name: "prstoklad",
+        category: "Michal"
+    },
+    {
+        src: "https://file.garden/Z32B8tR62kvprAN2/Photos/WhatsApp%20Image%202025-01-07%20at%2020.55.37.jpeg",
+        name: "bro is not him",
+        category: "Michal"
+    },
+    {
+        src: "https://file.garden/Z32B8tR62kvprAN2/Photos/WhatsApp%20Image%202025-01-07%20at%2020.56.47.jpeg",
+        name: "why so serious",
+        category: "Michal"
+    },
+    {
+        src: "https://file.garden/Z32B8tR62kvprAN2/Photos/WhatsApp%20Image%202025-01-07%20at%2020.59.42.jpeg",
+        name: "hraci pole na cele",
+        category: "Michal"
+    },
+    {
+        src: "https://file.garden/Z32B8tR62kvprAN2/Photos/WhatsApp%20Image%202025-01-07%20at%2021.22.48%20(2).jpeg",
+        name: "michalovo tazny vuz",
+        category: "Michal"
+    },
+    {
+        src: "https://file.garden/Z32B8tR62kvprAN2/Photos/WhatsApp%20Image%202025-01-07%20at%2021.24.16%20(1).jpeg",
+        name: "Michal gentleman",
+        category: "Michal"
+    },
+    
+    
+    
+
+    
+];
+
+const sounds = [
+    {
+        src: "https://file.garden/ZxmC4yQL6hzekzvV/ncsobjects/music/arrow.mp3",
+        name: "Jim Yosef - Arrow",
+        delay: 14.77
+    },
+    {
+        src: "https://file.garden/Z32B8tR62kvprAN2/KSI%20-%20Thick%20Of%20It%20(feat.%20Trippie%20Redd)%20%5BOfficial%20Music%20Video%5D.mp3",
+        name: "thick of it - nigger",
+        delay: 44.00
+    },
+    {
+        src: "https://file.garden/Z32B8tR62kvprAN2/Photos/Music/sigma%20town%20(SAFE%20AND%20SOUND%20BRAIN%20ROT%20PARODY).mp3",
+        name: "sigma town - AI",
+        delay: 16.00
+    },
+    {
+        src: "https://file.garden/Z32B8tR62kvprAN2/Photos/Music/Nirvana%20-%20Smells%20Like%20Teen%20Spirit%20(Official%20Music%20Video).mp3",
+        name: "smells like team spirit - buckshot roulette",
+        delay: 9.50
+    },
+    {
+        src: "https://file.garden/Z32B8tR62kvprAN2/Photos/Music/CreditlessShikanoko%20Nokonoko%20Koshitantan%20OP%20%20OpeningUHD%2060FPS.mp3",
+        name: "shikanokonoko - konstantan",
+        delay: 11.00
+    },
+];
+
+function populateSelectMenus() {
+    const imageSelect = document.getElementById('imageSelect');
+    const soundSelect = document.getElementById('soundSelect');
+    
+    // Clear existing options
+    imageSelect.innerHTML = '';
+    soundSelect.innerHTML = '';
+    
+    // Group images by category
+    const categorizedImages = {};
+    images.forEach(image => {
+        if (!categorizedImages[image.category]) {
+            categorizedImages[image.category] = [];
+        }
+        categorizedImages[image.category].push(image);
+    });
+    
+    // Get category order based on first appearance in images array
+    const categoryOrder = [];
+    images.forEach(image => {
+        if (!categoryOrder.includes(image.category)) {
+            categoryOrder.push(image.category);
+        }
+    });
+    
+    // Add categorized images to select menu in the order they appear
+    categoryOrder.forEach(category => {
+        const optgroup = document.createElement('optgroup');
+        optgroup.label = category;
+        
+        categorizedImages[category].forEach(image => {
+            const option = document.createElement('option');
+            option.value = image.src;
+            option.textContent = image.name;
+            optgroup.appendChild(option);
+        });
+        
+        imageSelect.appendChild(optgroup);
+    });
+    
+    // Add sounds to select menu (unchanged)
+    sounds.forEach(sound => {
+        const option = document.createElement('option');
+        option.value = sound.src;
+        option.textContent = sound.name;
+        soundSelect.appendChild(option);
+    });
+    
+    // Update image and sound counts
+    updateCounts();
+    
+    // Setup search functionality
+    setupSearch();
+}
+
+function updateCounts() {
+    const imageCount = document.getElementById('imageCount');
+    const soundCount = document.getElementById('soundCount');
+
+    imageCount.textContent = images.length;
+    soundCount.textContent = sounds.length;
+}
+
+function setupSearch() {
+    const imageSearch = document.getElementById('imageSearch');
+    const soundSearch = document.getElementById('soundSearch');
+    
+    imageSearch.addEventListener('input', function() {
+        filterOptions('imageSelect', this.value);
+    });
+    
+    soundSearch.addEventListener('input', function() {
+        filterOptions('soundSelect', this.value);
+    });
+}
+
+function filterOptions(selectId, searchText) {
+    const select = document.getElementById(selectId);
+    const searchTerms = searchText.toLowerCase().split(' ');
+    
+    if (selectId === 'imageSelect') {
+        // Handle grouped options
+        const optgroups = select.getElementsByTagName('optgroup');
+        for (let optgroup of optgroups) {
+            let visibleOptions = 0;
+            const options = optgroup.getElementsByTagName('option');
+            
+            for (let option of options) {
+                const text = option.textContent.toLowerCase();
+                const matchesAll = searchTerms.every(term => text.includes(term));
+                
+                if (matchesAll) {
+                    option.classList.remove('hidden-option');
+                    visibleOptions++;
+                } else {
+                    option.classList.add('hidden-option');
+                }
+            }
+            
+            // Show/hide optgroup based on if it has any visible options
+            optgroup.style.display = visibleOptions > 0 ? '' : 'none';
+        }
+    } else {
+        // Handle regular options (for sound select)
+        const options = select.getElementsByTagName('option');
+        for (let option of options) {
+            const text = option.textContent.toLowerCase();
+            const matchesAll = searchTerms.every(term => text.includes(term));
+            
+            if (matchesAll) {
+                option.classList.remove('hidden-option');
+            } else {
+                option.classList.add('hidden-option');
+            }
+        }
+    }
+}
+
+function toggleEditMenu() {
+    const editMenu = document.getElementById('editMenu');
+    if (editMenu.style.display === 'none' || editMenu.style.display === '') {
+        editMenu.style.display = 'block';
+        populateSelectMenus();
+    } else {
+        editMenu.style.display = 'none';
+    }
+}
+
+function handleFileUpload(file, type) {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            resolve(e.target.result);
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+async function applyCustomPairing() {
+    let selectedImageSrc = document.getElementById('imageSelect').value;
+    let selectedSoundSrc = document.getElementById('soundSelect').value;
+    
+    // Handle image upload if present
+    const imageFile = document.getElementById('imageUpload').files[0];
+    if (imageFile) {
+        selectedImageSrc = await handleFileUpload(imageFile, 'image');
+    }
+    
+    // Handle sound upload if present
+    const soundFile = document.getElementById('soundUpload').files[0];
+    if (soundFile) {
+        selectedSoundSrc = await handleFileUpload(soundFile, 'audio');
+        // Create temporary sound object for uploaded audio with custom delay
+        const customDelay = parseFloat(document.getElementById('delayInput').value) || 10;
+        currentSound = {
+            src: selectedSoundSrc,
+            name: soundFile.name,
+            delay: customDelay
+        };
+    } else {
+        currentSound = sounds.find(sound => sound.src === selectedSoundSrc);
+    }
+    
+    hideImage();
+    
+    if (currentImageTimeout) {
+        clearTimeout(currentImageTimeout);
+    }
+    
+    if (timerInterval) {
+        clearInterval(timerInterval);
+    }
+    document.getElementById('timer').textContent = "0.00";
+    
+    const imgElement = document.getElementById('randomImage');
+    imgElement.src = selectedImageSrc;
+    
+    const audioPlayer = document.getElementById('audioPlayer');
+    audioPlayer.src = selectedSoundSrc;
+    
+    audioPlayer.load();
+    audioPlayer.play().catch(error => {
+        console.log("Audio playback failed:", error);
+    });
+    
+    toggleEditMenu();
+}
+
+// Add event listener for sound upload
+document.getElementById('soundUpload').addEventListener('change', function(e) {
+    const delayContainer = document.getElementById('delayInputContainer');
+    if (e.target.files.length > 0) {
+        delayContainer.style.display = 'block';
+    } else {
+        delayContainer.style.display = 'none';
+    }
+});
+
+function resetImageUpload() {
+    const imageUpload = document.getElementById('imageUpload');
+    imageUpload.value = ''; // Clear the file input
+    document.getElementById('imageSelect').selectedIndex = 0; // Reset dropdown to first option
+}
+
+function resetSoundUpload() {
+    const soundUpload = document.getElementById('soundUpload');
+    soundUpload.value = ''; // Clear the file input
+    document.getElementById('soundSelect').selectedIndex = 0; // Reset dropdown to first option
+    document.getElementById('delayInputContainer').style.display = 'none'; // Hide delay input
+}
+
+function getRandomElement(array) {
+    return array[Math.floor(Math.random() * array.length)];
+}
+
+function showImage() {
+    const imgElement = document.getElementById('randomImage');
+    imgElement.style.display = "block";
+    imgElement.style.opacity = "1";
+    imgElement.classList.add('floating'); // Add floating class
+}
+
+function hideImage() {
+    const imgElement = document.getElementById('randomImage');
+    imgElement.style.opacity = "0";
+    imgElement.classList.remove('floating'); // Remove floating class
+    setTimeout(() => {
+        imgElement.style.display = "none";
+    }, 500); // Adjust to match the opacity transition duration
+}
+
+function showImageWithGlow() {
+    const imgElement = document.getElementById('randomImage');
+    const audioPlayer = document.getElementById('audioPlayer');
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const analyser = audioContext.createAnalyser();
+    const source = audioContext.createMediaElementSource(audioPlayer);
+
+    // Connect audio to analyser
+    source.connect(analyser);
+    analyser.connect(audioContext.destination);
+
+    // Setup analyser
+    analyser.fftSize = 256;
+    const dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+    imgElement.style.display = "block";
+    imgElement.style.opacity = "1";
+
+    function updateGlowEffect() {
+        analyser.getByteFrequencyData(dataArray);
+        const averageVolume = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
+        const glowIntensity = Math.min(averageVolume / 2, 50); // Adjust max glow intensity
+
+        imgElement.style.boxShadow = `0 0 ${glowIntensity}px rgba(255, 255, 255, 1)`;
+
+        // Repeat on the next animation frame
+        requestAnimationFrame(updateGlowEffect);
+    }
+
+    // Start the glow effect
+    updateGlowEffect();
+}
+
+
+
+let currentSound;
+let timerInterval;
+let currentImageTimeout;
+
+function toggleMute() {
+    const audioPlayer = document.getElementById('audioPlayer');
+    const muteButton = document.getElementById('muteButton');
+    
+    if (audioPlayer.muted) {
+        audioPlayer.muted = false;
+        muteButton.textContent = "Mute";
+        muteButton.style.background = "#ff4444";
+    } else {
+        audioPlayer.muted = true;
+        muteButton.textContent = "Unmute";
+        muteButton.style.background = "#4CAF50";
+    }
+}
+
+function startTimer(delay) {
+    let startTime = Date.now();
+    const timerElement = document.getElementById('timer');
+    
+    if (timerInterval) {
+        clearInterval(timerInterval);
+    }
+    
+    timerInterval = setInterval(() => {
+        let elapsedTime = (Date.now() - startTime) / 1000;
+        if (elapsedTime >= delay) {
+            clearInterval(timerInterval);
+            timerElement.textContent = delay.toFixed(2);
+        } else {
+            timerElement.textContent = elapsedTime.toFixed(2);
+        }
+    }, 10);
+}
+
+function generateRandomPairing() {
+    if (currentImageTimeout) {
+        clearTimeout(currentImageTimeout);
+    }
+    
+    hideImage();
+    
+    if (timerInterval) {
+        clearInterval(timerInterval);
+    }
+    document.getElementById('timer').textContent = "0.00";
+    
+    const randomImage = getRandomElement(images);
+    currentSound = getRandomElement(sounds);
+    
+    const imgElement = document.getElementById('randomImage');
+    imgElement.src = randomImage.src;
+    
+    const audioPlayer = document.getElementById('audioPlayer');
+    audioPlayer.src = currentSound.src;
+    
+    audioPlayer.load();
+    audioPlayer.play().catch(error => {
+        console.log("Audio playback failed:", error);
+    });
+}
+
+window.onload = function() {
+    const audioPlayer = document.getElementById('audioPlayer');
+    
+    audioPlayer.addEventListener('play', function() {
+        if (currentSound) {
+            startTimer(currentSound.delay);
+            currentImageTimeout = setTimeout(showImage, currentSound.delay * 1000);
+        }
+    });
+
+    generateRandomPairing();
+    
+    document.addEventListener('click', function() {
+        audioPlayer.play().catch(error => {
+            console.log("Audio playback failed:", error);
+        });
+    });
+};
+
+document.addEventListener('keydown', function(event) {
+    // Only trigger space generation if not typing in a text input
+    const activeElement = document.activeElement;
+    const isTyping = activeElement.tagName === 'INPUT' && 
+                     activeElement.type === 'text';
+    
+    if (event.code === 'Space' && !isTyping) {
+        generateRandomPairing();
+        event.preventDefault();
+    }
+});
+</script>
+
+
+
+</body>
+
+</html>

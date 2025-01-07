@@ -1,0 +1,133 @@
+<html>
+<head>
+    <base href="." />
+    <title>The Finals - Season Trailers</title>
+    <style>
+       body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background: #E72B2B;
+        color: #fff;
+        display: flex;
+        min-height: 100vh;
+        flex-direction: row-reverse;
+       }
+
+       .menu {
+        width: 200px;
+        padding: 20px;
+        background: #1a1a1a;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+       }
+
+       .menu-button {
+        padding: 15px 25px;
+        border: none;
+        border-radius: 5px;
+        background: #ff3300;
+        color: white;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+       }
+
+       .back-button {
+        padding: 15px 25px;
+        border: none;
+        border-radius: 5px;
+        background: #007BFF;
+        color: white;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        margin-bottom: 20px;
+       }
+
+       .menu-button:hover {
+        background: #ff5533;
+        transform: scale(1.05);
+        box-shadow: 0 0 15px rgba(255, 51, 0, 0.5);
+       }
+
+       .back-button:hover {
+        background: #0056b3;
+        transform: scale(1.05);
+        box-shadow: 0 0 15px rgba(0, 123, 255, 0.5);
+       }
+
+       .content {
+        flex-grow: 1;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+       }
+
+       .video-container {
+        width: 80%;
+        aspect-ratio: 16/9;
+       }
+
+       iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 0 30px rgba(255, 51, 0, 0.3);
+       }
+    </style>
+</head>
+<body>
+    <div class="menu">
+        <button class="back-button" onclick="goBack()">Back</button>
+        <button class="menu-button" onclick="changeVideo('beta')">Beta</button>
+        <button class="menu-button" onclick="changeVideo('season1')">Season 1</button>
+        <button class="menu-button" onclick="changeVideo('season2')">Season 2</button>
+        <button class="menu-button" onclick="changeVideo('season3')">Season 3</button>
+        <button class="menu-button" onclick="changeVideo('season4')">Season 4</button>
+        <button class="menu-button" onclick="changeVideo('season5')">Season 5</button>
+    </div>
+    <div class="content">
+        <div class="video-container" id="videoPlayer">
+            <!-- Default video will be loaded here -->
+        </div>
+    </div>
+
+    <script>
+        const videos = {
+            'beta': 'https://www.youtube.com/embed/ZwsTn7tBZPM',
+            'season1': 'https://www.youtube.com/embed/D_-sYUHyhAw',
+            'season2': 'https://www.youtube.com/embed/hVdKBnmvOLE?si=4GNPZl_g2buZyWI4',
+            'season3': 'https://www.youtube.com/embed/8kWYWa3Jv2Q?si=heM_DENEQUmUIHOu',
+            'season4': 'https://www.youtube.com/embed/nxtnoNshZEo?si=ujzWYoSAa_YahYiX',
+            'season5': 'https://www.youtube.com/embed/zSbUS-i0D_Q?si=YaWkuVPUS3R1KYC9'
+        };
+
+        function changeVideo(season) {
+            const videoContainer = document.getElementById('videoPlayer');
+            videoContainer.innerHTML = `<iframe 
+                src="${videos[season]}" 
+                title="The Finals ${season} Trailer"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen>
+            </iframe>`;
+        }
+
+        function goBack() {
+            window.history.back();
+        }
+
+        // Load beta trailer by default when page loads
+        window.onload = function() {
+            changeVideo('beta');
+        }
+    </script>
+</body>
+</html>

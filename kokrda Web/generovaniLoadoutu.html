@@ -1,0 +1,306 @@
+<html><head><base href="." />
+<meta charset="UTF-8">
+<title>THE FINALS Random Build Generator</title>
+<link rel="stylesheet" href="styles.css" media="screen">
+<style>
+    body {
+        background: #1a1a1a;
+        color: #fff;
+        font-family: 'Play', sans-serif;
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+        background: linear-gradient(45deg, #1a1a1a, #2a2a2a);
+    }
+
+    .container {
+        text-align: center;
+        background: rgba(0,0,0,0.7);
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 0 20px rgba(255,87,34,0.3);
+        max-width: 600px;
+        width: 90%;
+        margin-top: 50px;
+    }
+
+    .weapon-display, .specialization-display {
+        font-size: 2em;
+        margin: 20px;
+        color: #ff5722;
+        text-shadow: 0 0 10px rgba(255,87,34,0.5);
+    }
+
+    .specialization-display {
+        font-size: 1.5em;
+        color: #4CAF50;
+    }
+
+    .button-container {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .generate-btn, .category-btn {
+        background: #ff5722;
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        font-size: 1.2em;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .category-btn {
+        background: white;
+        color: #1a1a1a;
+    }
+
+    .category-btn.disabled {
+        background: #666;
+        color: #fff;
+    }
+
+    .generate-btn:hover, .category-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 15px rgba(255,87,34,0.5);
+    }
+
+    .generate-btn:disabled {
+        background: #666;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .weapon-icon {
+        width: 100px;
+        height: 100px;
+        margin: 20px auto;
+    }
+
+    .gadgets-display {
+        margin-top: 20px;
+        font-size: 1.2em;
+        color: #aaa;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+
+    .pulse {
+        animation: pulse 0.5s ease-in-out;
+    }
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Play:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="side-buttons">
+        <a href="Finals.html" class="side-btn">back</a>
+    </div>
+
+<div class="container">
+    <h1>THE FINALS Build Generator</h1>
+    <div class="weapon-icon">
+        <svg viewBox="0 0 100 100" fill="#ff5722">
+            <path d="M10,50 L30,30 L70,30 L90,50 L70,70 L30,70 Z"/>
+            <circle cx="50" cy="50" r="10"/>
+        </svg>
+    </div>
+    <div class="weapon-display" id="weaponDisplay"></div>
+    <div class="specialization-display" id="specializationDisplay"></div>
+    <div class="gadgets-display" id="gadgetsDisplay"></div>
+    <div class="button-container">
+        <button class="generate-btn" onclick="startWeaponRoll()">Generate</button>
+        <button class="category-btn" onclick="toggleCategory('light')" id="lightBtn">Light</button>
+        <button class="category-btn" onclick="toggleCategory('medium')" id="mediumBtn">Medium</button>
+        <button class="category-btn" onclick="toggleCategory('heavy')" id="heavyBtn">Heavy</button>
+    </div>
+</div>
+
+<script>
+const weapons = {
+    light: ["93R","DAGGER","LH1","M11","M26 MATTER","RECURVE BOW","SH1900","SR-84","SWORD","THROWING KNIFES","V9S","XP-56"],
+    medium: ["AKM","CERBERUS 12GA","CL-40","DUAL BLADES","FAMAS","FCAR","MODEL 1887","PIKE-556","R.357","RIOT SHIELD"],
+    heavy: [".50 AKIMBO","FLAMETHROWER","KS-23","LEWIS GUN","M60","MGL32","SA1216","SHAK-50","SLEDHEHAMMER","SPEAR"]
+};
+
+const specializations = {
+    light: ["Grapling hook", "Cloaking Device", "Evaside Dash"],
+    medium: ["healing Beam", "Dematerializer", "Turret"],
+    heavy: ["Charge n´ Slam", "Mesh Shield", "Winch Claw","Goo Gun"]
+};
+
+const gadgets = {
+    light: ["BREACH CHARGE","GATEWAY","GLITCH GRENADE","GRAVITY VORTEX","SONAR GRENADE","STUN GUN","THERMAL BORE","THERMAL VISION","TRACKING DART","VANISHING BOMB","FLASHBANG","FRAG GRENADE","GAS GRENADE","GOO GRENADE","PYRO GRENADE","SMOKE GRENADE"],
+    medium: ["APS TURRET","DATA RESHAPER","DEFIBRILATOR","EXPLOSIVE MINE","GAS MINE","GLITCH MINE","JUMP PAD","ZIPLINE","PROXIMITY SENSOR","FLASHBANG","FRAG GRENADE","GAS GRENADE","GOO GRENADE","PYRO GRENADE","SMOKE GRENADE"],
+    heavy: ["ANTI-GRAVITY CUBE","BARRICADE","C4","DOME SHIELD","EXPLOSIVE MINE","PROIMITY SENSOR","LOCKBOLT LAUNCHER","PYRO MINE","RPG-7","FLASHBANG","FRAG GRENADE","GAS GRENADE","GOO GRENADE","PYRO GRENADE","SMOKE GRENADE"]
+};
+
+const weaponDescriptions = {
+    "Knife": "Quick melee weapon for close combat",
+    "AKM": "Reliable assault rifle with moderate damage",
+    "LH1": "Accurate semi-automatic pistol",
+    "R357": "High-damage revolver",
+    "SAP3": "Rapid-fire pistol",
+    "V9S": "Silenced pistol for stealth",
+    "Riot Shield": "Defensive equipment with bash attack",
+    "Lewis Gun": "Heavy machine gun with large magazine",
+    "Model 1887": "Powerful lever-action shotgun",
+    "FCAR": "Burst-fire assault rifle",
+    "CL-40": "Grenade launcher with varied ammunition",
+    "Sledgehammer": "Heavy melee weapon with high damage",
+    "MGL": "Multiple grenade launcher",
+    "M60": "High-capacity light machine gun",
+    "Flamethrower": "Area denial weapon",
+    "RPG-7": "Rocket launcher with high explosive damage"
+};
+
+const disabledCategories = new Set();
+
+function toggleCategory(category) {
+    const btn = document.getElementById(`${category}Btn`);
+    if (disabledCategories.has(category)) {
+        disabledCategories.delete(category);
+        btn.classList.remove('disabled');
+    } else {
+        disabledCategories.add(category);
+        btn.classList.add('disabled');
+    }
+}
+
+function getRandomWeapon() {
+    const availableCategories = Object.keys(weapons).filter(cat => !disabledCategories.has(cat));
+    if (availableCategories.length === 0) return null;
+    
+    const randomCategory = availableCategories[Math.floor(Math.random() * availableCategories.length)];
+    const categoryWeapons = weapons[randomCategory];
+    return {
+        weapon: categoryWeapons[Math.floor(Math.random() * categoryWeapons.length)],
+        category: randomCategory
+    };
+}
+
+let audioContext;
+let oscillator;
+
+function initAudio() {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+}
+
+function playTickSound(frequency) {
+    if (!audioContext) initAudio();
+    
+    oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+    
+    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+    
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + 0.1);
+}
+
+function getRandomSpecialization(category) {
+    const categorySpecs = specializations[category];
+    return categorySpecs[Math.floor(Math.random() * categorySpecs.length)];
+}
+
+function getRandomGadgets(category, count = 3) {
+    const categoryGadgets = [...gadgets[category]];
+    const selectedGadgets = [];
+    
+    for (let i = 0; i < count; i++) {
+        const randomIndex = Math.floor(Math.random() * categoryGadgets.length);
+        selectedGadgets.push(categoryGadgets.splice(randomIndex, 1)[0]);
+    }
+    
+    return selectedGadgets;
+}
+
+function updateWeaponDisplay(weapon, category) {
+    const weaponDisplay = document.getElementById('weaponDisplay');
+    const specializationDisplay = document.getElementById('specializationDisplay');
+    const gadgetsDisplay = document.getElementById('gadgetsDisplay');
+    
+    weaponDisplay.innerHTML = `
+        <div>${weapon}</div>
+        <div style="font-size: 0.5em; color: #aaa; margin-top: 10px">
+            ${weaponDescriptions[weapon] || ""}
+        </div>
+        <div style="font-size: 0.6em; color: #ff5722; margin-top: 5px">
+            Category: ${category.toUpperCase()}
+        </div>
+    `;
+
+    const specialization = getRandomSpecialization(category);
+    specializationDisplay.innerHTML = `
+        <div style="font-size: 0.8em; color: #4CAF50; margin-bottom: 10px">Specialization:</div>
+        <div>${specialization}</div>
+    `;
+
+    const randomGadgets = getRandomGadgets(category);
+    gadgetsDisplay.innerHTML = `
+        <div style="font-size: 0.8em; color: #ff5722; margin-bottom: 10px">Recommended Gadgets:</div>
+        ${randomGadgets.map(gadget => `<div>${gadget}</div>`).join('')}
+    `;
+}
+
+function startWeaponRoll() {
+    const button = document.querySelector('.generate-btn');
+    button.disabled = true;
+    
+    let iterations = 0;
+    const maxIterations = 15;
+    let interval = 50;
+    
+    function roll() {
+        const weaponResult = getRandomWeapon();
+        if (!weaponResult) {
+            alert("Please enable at least one category!");
+            button.disabled = false;
+            return;
+        }
+        
+        updateWeaponDisplay(weaponResult.weapon, weaponResult.category);
+        playTickSound(440 + (iterations * 20));
+        
+        iterations++;
+        
+        if (iterations < maxIterations) {
+            interval = interval * 1.3;
+            setTimeout(roll, interval);
+        } else {
+            const finalWeapon = getRandomWeapon();
+            if (finalWeapon) {
+                updateWeaponDisplay(finalWeapon.weapon, finalWeapon.category);
+                playTickSound(880);
+            }
+            button.disabled = false;
+            
+            const weaponIcon = document.querySelector('.weapon-icon');
+            weaponIcon.style.animation = 'none';
+            void weaponIcon.offsetWidth;
+            weaponIcon.style.animation = 'pulse 0.5s ease-in-out';
+        }
+    }
+    
+    roll();
+}
+</script>
+</body></html>

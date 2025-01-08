@@ -50,6 +50,20 @@
         margin-bottom: 20px;
        }
 
+       .next-button {
+        padding: 15px 25px;
+        border: none;
+        border-radius: 5px;
+        background: #28a745;
+        color: white;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        margin-bottom: 20px;
+       }
+
        .menu-button:hover {
         background: #ff5533;
         transform: scale(1.05);
@@ -60,6 +74,12 @@
         background: #0056b3;
         transform: scale(1.05);
         box-shadow: 0 0 15px rgba(0, 123, 255, 0.5);
+       }
+
+       .next-button:hover {
+        background: #218838;
+        transform: scale(1.05);
+        box-shadow: 0 0 15px rgba(40, 167, 69, 0.5);
        }
 
        .content {
@@ -87,12 +107,14 @@
 <body>
     <div class="menu">
         <button class="back-button" onclick="goBack()">Back</button>
+        <button class="next-button" onclick="goToNextPage()">Generování Loadout</button>
         <button class="menu-button" onclick="changeVideo('beta')">Beta</button>
         <button class="menu-button" onclick="changeVideo('season1')">Season 1</button>
         <button class="menu-button" onclick="changeVideo('season2')">Season 2</button>
         <button class="menu-button" onclick="changeVideo('season3')">Season 3</button>
         <button class="menu-button" onclick="changeVideo('season4')">Season 4</button>
         <button class="menu-button" onclick="changeVideo('season5')">Season 5</button>
+       
     </div>
     <div class="content">
         <div class="video-container" id="videoPlayer">
@@ -121,7 +143,12 @@
         }
 
         function goBack() {
-            window.history.back();
+            window.location.href = "html.html";
+        }
+
+        function goToNextPage() {
+            // Here you can specify the URL of the next page
+            window.location.href = "generovaniLoadoutu.html"; // Replace with your desired URL
         }
 
         // Load beta trailer by default when page loads
